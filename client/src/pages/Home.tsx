@@ -514,6 +514,25 @@ function Footer() {
         <p className="mt-6 font-mono text-xs tracking-wider" style={{ color: "oklch(0.35 0.02 260)" }}>
           {t("footer.copyright")}
         </p>
+        <div className="mt-8 pt-6 border-t" style={{ borderColor: "oklch(0.18 0.02 260)" }}>
+          <p className="text-xs" style={{ color: "oklch(0.4 0.02 260)" }}>
+            {t("footer.builtBy")}{" "}
+            <a
+              href="https://am2ar.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium hover:underline transition-colors duration-200"
+              style={{ color: accentColors.gold }}
+            >
+              Alfredo Rabelo
+            </a>
+          </p>
+          <p className="mt-2 font-mono text-[10px] tracking-wider" style={{ color: "oklch(0.32 0.02 260)" }}>
+            <a href="https://am2ar.com" target="_blank" rel="noopener noreferrer" className="hover:underline">am2ar.com</a>
+            {" · "}
+            <a href="tel:+13523284402" className="hover:underline">+1 (352) 328-4402</a>
+          </p>
+        </div>
       </div>
     </footer>
   );

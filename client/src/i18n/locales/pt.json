@@ -52,7 +52,8 @@
   "footer": {
     "sources": "Dados obtidos de",
     "disclaimer": "As projeções são estimativas baseadas nas taxas de tradução de 2022–2025 e devem ser interpretadas como ilustrativas, não definitivas.",
-    "copyright": "Cronologia da Tradução Bíblica · 2026"
+    "copyright": "Cronologia da Tradução Bíblica · 2026",
+    "builtBy": "Desenvolvido por"
   },
   "projection": "Projeção",
   "someScripture": "Algumas Escrituras",

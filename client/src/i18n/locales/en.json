@@ -52,7 +52,8 @@
   "footer": {
     "sources": "Data sourced from",
     "disclaimer": "Projections are estimates based on 2022–2025 translation rates and should be interpreted as illustrative, not definitive.",
-    "copyright": "Bible Translation Timeline · 2026"
+    "copyright": "Bible Translation Timeline · 2026",
+    "builtBy": "Built by"
   },
   "projection": "Projection",
   "someScripture": "Some Scripture",
