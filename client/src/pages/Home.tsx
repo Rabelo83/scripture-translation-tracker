@@ -2,13 +2,16 @@
  * Design: "Luminous Thread" — Dark Cathedral Aesthetic
  * Deep midnight-blue background, golden glowing timeline thread,
  * stained-glass accent colors, Playfair Display + Source Serif 4 typography.
+ * Fully internationalized with react-i18next.
  */
 
 import { useEffect, useRef, useState, useMemo } from "react";
 import { motion, useInView } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { eras, timelineEvents, translationGrowthData, type TimelineEvent, type Era } from "@/lib/timelineData";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import CountdownClock from "@/components/CountdownClock";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { ExternalLink } from "lucide-react";
 
 const HERO_IMAGE = "https://d2xsxph8kpxj0f.cloudfront.net/310519663488259868/VjUGuydrAHXpGVYaWdwTng/hero-cathedral-oQbnzUTSRCKcsQHEZuxsfy.webp";
@@ -57,7 +60,6 @@ const accentDot: Record<string, string> = {
   amber: "bg-[oklch(0.75_0.15_65)]",
 };
 
-// Era images mapping
 const eraImages: Partial<Record<Era, string>> = {
   ancient: SCROLL_IMAGE,
   reformation: PRESS_IMAGE,
@@ -65,7 +67,7 @@ const eraImages: Partial<Record<Era, string>> = {
   future: FUTURE_IMAGE,
 };
 
-/* ─── Source Link (small inline link on cards) ─── */
+/* ─── Source Link ─── */
 function SourceLink({ source }: { source?: { label: string; url: string } }) {
   if (!source) return null;
   return (
@@ -84,15 +86,13 @@ function SourceLink({ source }: { source?: { label: string; url: string } }) {
 
 /* ─── Hero Section ─── */
 function HeroSection() {
+  const { t } = useTranslation();
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background */}
       <div className="absolute inset-0">
         <img src={HERO_IMAGE} alt="" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-b from-[oklch(0.12_0.02_260/0.4)] via-[oklch(0.12_0.02_260/0.6)] to-[oklch(0.12_0.02_260)]" />
       </div>
-
-      {/* Content */}
       <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
         <motion.p
           initial={{ opacity: 0, y: 20 }}
@@ -101,7 +101,7 @@ function HeroSection() {
           className="font-mono text-sm tracking-[0.3em] uppercase mb-6"
           style={{ color: accentColors.gold }}
         >
-          From Ancient Scrolls to Every Language
+          {t("hero.tagline")}
         </motion.p>
         <motion.h1
           initial={{ opacity: 0, y: 30 }}
@@ -110,7 +110,7 @@ function HeroSection() {
           className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold leading-[1.05] tracking-tight text-glow-gold"
           style={{ fontFamily: "var(--font-display)", color: "oklch(0.95 0.03 80)" }}
         >
-          The Bible Translation Timeline
+          {t("hero.title")}
         </motion.h1>
         <motion.p
           initial={{ opacity: 0, y: 20 }}
@@ -119,12 +119,8 @@ function HeroSection() {
           className="mt-8 text-lg sm:text-xl leading-relaxed max-w-2xl mx-auto"
           style={{ color: "oklch(0.78 0.02 80)" }}
         >
-          A journey through 3,400 years of history — from the first Hebrew texts
-          to the projected day when every language on Earth will have access to
-          Scripture.
+          {t("hero.subtitle")}
         </motion.p>
-
-        {/* Scroll indicator */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -140,7 +136,7 @@ function HeroSection() {
             <div className="w-1.5 h-1.5 rounded-full" style={{ background: accentColors.gold }} />
           </motion.div>
           <p className="mt-3 text-xs tracking-widest uppercase" style={{ color: "oklch(0.5 0.02 260)" }}>
-            Scroll to explore
+            {t("hero.scroll")}
           </p>
         </motion.div>
       </div>
@@ -148,17 +144,13 @@ function HeroSection() {
   );
 }
 
-/* ─── Era Navigator (sticky sidebar) ─── */
+/* ─── Era Navigator ─── */
 function EraNavigator({ activeEra }: { activeEra: Era }) {
+  const { t } = useTranslation();
   return (
     <nav className="fixed left-4 top-1/2 -translate-y-1/2 z-50 hidden lg:flex flex-col gap-2">
       {eras.map((era) => (
-        <a
-          key={era.id}
-          href={`#era-${era.id}`}
-          className="group flex items-center gap-3"
-          title={era.title}
-        >
+        <a key={era.id} href={`#era-${era.id}`} className="group flex items-center gap-3" title={t(`eras.${era.id}.title`)}>
           <div
             className="w-2.5 h-2.5 rounded-full transition-all duration-300"
             style={{
@@ -171,7 +163,7 @@ function EraNavigator({ activeEra }: { activeEra: Era }) {
             className="text-xs font-mono tracking-wider uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap"
             style={{ color: era.color }}
           >
-            {era.yearRange}
+            {t(`eras.${era.id}.yearRange`)}
           </span>
         </a>
       ))}
@@ -183,13 +175,10 @@ function EraNavigator({ activeEra }: { activeEra: Era }) {
 function EraHeader({ era, image }: { era: typeof eras[0]; image?: string }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const { t } = useTranslation();
 
   return (
-    <div
-      id={`era-${era.id}`}
-      ref={ref}
-      className="relative py-24 sm:py-32 scroll-mt-20"
-    >
+    <div id={`era-${era.id}`} ref={ref} className="relative py-24 sm:py-32 scroll-mt-20">
       {image && (
         <div className="absolute inset-0 overflow-hidden">
           <img src={image} alt="" className="w-full h-full object-cover opacity-20" />
@@ -197,7 +186,6 @@ function EraHeader({ era, image }: { era: typeof eras[0]; image?: string }) {
         </div>
       )}
       <div className="relative container max-w-4xl mx-auto px-4 text-center">
-        {/* Decorative arch */}
         <motion.div
           initial={{ scaleX: 0 }}
           animate={isInView ? { scaleX: 1 } : {}}
@@ -212,7 +200,7 @@ function EraHeader({ era, image }: { era: typeof eras[0]; image?: string }) {
           className="font-mono text-xs tracking-[0.4em] uppercase mb-4"
           style={{ color: era.color }}
         >
-          {era.yearRange}
+          {t(`eras.${era.id}.yearRange`)}
         </motion.p>
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
@@ -221,7 +209,7 @@ function EraHeader({ era, image }: { era: typeof eras[0]; image?: string }) {
           className="text-4xl sm:text-5xl md:text-6xl font-bold"
           style={{ fontFamily: "var(--font-display)", color: "oklch(0.95 0.02 80)" }}
         >
-          {era.title}
+          {t(`eras.${era.id}.title`)}
         </motion.h2>
         <motion.p
           initial={{ opacity: 0, y: 10 }}
@@ -230,7 +218,7 @@ function EraHeader({ era, image }: { era: typeof eras[0]; image?: string }) {
           className="mt-4 text-lg max-w-xl mx-auto"
           style={{ color: "oklch(0.65 0.02 260)" }}
         >
-          {era.subtitle}
+          {t(`eras.${era.id}.subtitle`)}
         </motion.p>
         <motion.div
           initial={{ scaleX: 0 }}
@@ -244,8 +232,9 @@ function EraHeader({ era, image }: { era: typeof eras[0]; image?: string }) {
   );
 }
 
-/* ─── Timeline Event Card (renders both desktop and mobile) ─── */
+/* ─── Timeline Event Card ─── */
 function CardContent({ event }: { event: TimelineEvent }) {
+  const { t } = useTranslation();
   return (
     <>
       {event.type === "projection" && (
@@ -253,7 +242,7 @@ function CardContent({ event }: { event: TimelineEvent }) {
           className="inline-block mb-3 px-2 py-0.5 text-[10px] font-mono tracking-widest uppercase rounded border border-dashed"
           style={{ borderColor: accentColors[event.accent], color: accentColors[event.accent] }}
         >
-          Projection
+          {t("projection")}
         </span>
       )}
       <p className="font-mono text-xs tracking-wider mb-1" style={{ color: accentColors[event.accent] }}>
@@ -263,17 +252,17 @@ function CardContent({ event }: { event: TimelineEvent }) {
         className="text-xl font-bold mb-3"
         style={{ fontFamily: "var(--font-display)", color: "oklch(0.95 0.02 80)" }}
       >
-        {event.title}
+        {t(`events.${event.i18nKey}.title`)}
       </h3>
       <p className="text-sm leading-relaxed" style={{ color: "oklch(0.72 0.02 260)" }}>
-        {event.description}
+        {t(`events.${event.i18nKey}.description`)}
       </p>
       {event.stats && (
         <div className="mt-4 grid grid-cols-2 gap-2">
           {event.stats.map((stat, i) => (
             <div key={i} className="rounded px-3 py-2" style={{ background: "oklch(0.12 0.02 260 / 0.6)" }}>
               <p className="text-[10px] font-mono uppercase tracking-wider" style={{ color: "oklch(0.5 0.02 260)" }}>
-                {stat.label}
+                {event.statI18nKeys?.[i] ? t(`statLabels.${event.statI18nKeys[i]}`) : stat.label}
               </p>
               <p className={`text-sm font-bold mt-0.5 ${accentText[event.accent]}`}>{stat.value}</p>
             </div>
@@ -292,7 +281,7 @@ function TimelineCard({ event, index }: { event: TimelineEvent; index: number })
 
   return (
     <div ref={ref} className="relative flex items-start gap-4 sm:gap-8 mb-12 sm:mb-16">
-      {/* Desktop layout: alternating sides */}
+      {/* Desktop layout */}
       <div className={`hidden md:flex w-full items-start ${isLeft ? "flex-row" : "flex-row-reverse"}`}>
         <motion.div
           initial={{ opacity: 0, x: isLeft ? -40 : 40 }}
@@ -302,8 +291,6 @@ function TimelineCard({ event, index }: { event: TimelineEvent; index: number })
         >
           <CardContent event={event} />
         </motion.div>
-
-        {/* Center dot */}
         <div className="flex flex-col items-center mx-4 flex-shrink-0">
           <motion.div
             initial={{ scale: 0 }}
@@ -313,11 +300,10 @@ function TimelineCard({ event, index }: { event: TimelineEvent; index: number })
             style={{ boxShadow: `0 0 12px ${accentColors[event.accent]}` }}
           />
         </div>
-
         <div className="w-[calc(50%-2rem)]" />
       </div>
 
-      {/* Mobile layout: single column */}
+      {/* Mobile layout */}
       <div className="flex md:hidden items-start gap-4 w-full">
         <div className="flex flex-col items-center flex-shrink-0">
           <motion.div
@@ -345,10 +331,11 @@ function TimelineCard({ event, index }: { event: TimelineEvent; index: number })
   );
 }
 
-/* ─── Growth Chart Section ─── */
+/* ─── Growth Chart ─── */
 function GrowthChart() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const { t } = useTranslation();
 
   return (
     <section ref={ref} className="py-20 sm:py-32">
@@ -360,16 +347,16 @@ function GrowthChart() {
           className="text-center mb-12"
         >
           <p className="font-mono text-xs tracking-[0.4em] uppercase mb-4" style={{ color: accentColors.gold }}>
-            Cumulative Progress
+            {t("chart.tagline")}
           </p>
           <h2
             className="text-3xl sm:text-4xl md:text-5xl font-bold"
             style={{ fontFamily: "var(--font-display)", color: "oklch(0.95 0.02 80)" }}
           >
-            The Exponential Growth of Translation
+            {t("chart.title")}
           </h2>
           <p className="mt-4 max-w-2xl mx-auto" style={{ color: "oklch(0.65 0.02 260)" }}>
-            Number of languages with Scripture over time. The dashed region represents projections based on current acceleration trends.
+            {t("chart.subtitle")}
           </p>
         </motion.div>
 
@@ -416,18 +403,17 @@ function GrowthChart() {
                   color: "oklch(0.85 0.02 80)",
                 }}
               />
-              <Area type="monotone" dataKey="portions" name="Portions" stroke={accentColors.emerald} fill="url(#gradPortions)" strokeWidth={2} />
-              <Area type="monotone" dataKey="nt" name="New Testament" stroke={accentColors.sapphire} fill="url(#gradNT)" strokeWidth={2} />
-              <Area type="monotone" dataKey="fullBible" name="Full Bible" stroke={accentColors.gold} fill="url(#gradFull)" strokeWidth={2} />
+              <Area type="monotone" dataKey="portions" name={t("chart.portions")} stroke={accentColors.emerald} fill="url(#gradPortions)" strokeWidth={2} />
+              <Area type="monotone" dataKey="nt" name={t("chart.newTestament")} stroke={accentColors.sapphire} fill="url(#gradNT)" strokeWidth={2} />
+              <Area type="monotone" dataKey="fullBible" name={t("chart.fullBible")} stroke={accentColors.gold} fill="url(#gradFull)" strokeWidth={2} />
             </AreaChart>
           </ResponsiveContainer>
 
-          {/* Legend */}
           <div className="flex flex-wrap justify-center gap-6 mt-4">
             {[
-              { label: "Full Bible", color: accentColors.gold },
-              { label: "New Testament", color: accentColors.sapphire },
-              { label: "Portions", color: accentColors.emerald },
+              { label: t("chart.fullBible"), color: accentColors.gold },
+              { label: t("chart.newTestament"), color: accentColors.sapphire },
+              { label: t("chart.portions"), color: accentColors.emerald },
             ].map((item) => (
               <div key={item.label} className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full" style={{ background: item.color }} />
@@ -443,16 +429,17 @@ function GrowthChart() {
   );
 }
 
-/* ─── Key Stats Banner ─── */
+/* ─── Stats Banner ─── */
 function StatsBanner() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const { t } = useTranslation();
 
   const stats = [
-    { value: "776", label: "Full Bibles", color: accentColors.gold },
-    { value: "1,798", label: "New Testaments", color: accentColors.sapphire },
-    { value: "4,007", label: "Languages with Scripture", color: accentColors.emerald },
-    { value: "544", label: "Languages Still Waiting", color: accentColors.ruby },
+    { value: "776", label: t("stats.fullBibles"), color: accentColors.gold },
+    { value: "1,798", label: t("stats.newTestaments"), color: accentColors.sapphire },
+    { value: "4,007", label: t("stats.withScripture"), color: accentColors.emerald },
+    { value: "544", label: t("stats.stillWaiting"), color: accentColors.ruby },
   ];
 
   return (
@@ -464,7 +451,7 @@ function StatsBanner() {
           className="text-center font-mono text-xs tracking-[0.4em] uppercase mb-10"
           style={{ color: accentColors.gold }}
         >
-          As of August 2025
+          {t("stats.asOf")}
         </motion.p>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
           {stats.map((stat, i) => (
@@ -494,11 +481,12 @@ function StatsBanner() {
 
 /* ─── Footer ─── */
 function Footer() {
+  const { t } = useTranslation();
   return (
     <footer className="py-16 border-t" style={{ borderColor: "oklch(0.2 0.02 260)" }}>
       <div className="container max-w-3xl mx-auto px-4 text-center">
         <p className="text-sm leading-relaxed" style={{ color: "oklch(0.5 0.02 260)" }}>
-          Data sourced from{" "}
+          {t("footer.sources")}{" "}
           <a href="https://progress.bible/" target="_blank" rel="noopener noreferrer" className="underline hover:no-underline" style={{ color: accentColors.gold }}>
             ProgressBible
           </a>
@@ -510,15 +498,15 @@ function Footer() {
           <a href="https://illuminations.bible/" target="_blank" rel="noopener noreferrer" className="underline hover:no-underline" style={{ color: accentColors.gold }}>
             IllumiNations
           </a>
-          , and{" "}
+          ,{" "}
           <a href="https://www.britannica.com/" target="_blank" rel="noopener noreferrer" className="underline hover:no-underline" style={{ color: accentColors.gold }}>
             Encyclopaedia Britannica
           </a>
-          . Projections are estimates based on 2022–2025 translation rates and should be interpreted as illustrative, not definitive.
+          . {t("footer.disclaimer")}
         </p>
         <div className="mt-6 h-px w-24 mx-auto" style={{ background: `linear-gradient(90deg, transparent, ${accentColors.gold}, transparent)` }} />
         <p className="mt-6 font-mono text-xs tracking-wider" style={{ color: "oklch(0.35 0.02 260)" }}>
-          Bible Translation Timeline &middot; 2026
+          {t("footer.copyright")}
         </p>
       </div>
     </footer>
@@ -528,8 +516,8 @@ function Footer() {
 /* ─── Main Page ─── */
 export default function Home() {
   const [activeEra, setActiveEra] = useState<Era>("ancient");
+  const { t } = useTranslation();
 
-  // Group events by era
   const eventsByEra = useMemo(() => {
     const grouped: Record<string, TimelineEvent[]> = {};
     for (const era of eras) {
@@ -538,7 +526,6 @@ export default function Home() {
     return grouped;
   }, []);
 
-  // Track active era via intersection observer
   useEffect(() => {
     const observers: IntersectionObserver[] = [];
     for (const era of eras) {
@@ -558,39 +545,32 @@ export default function Home() {
 
   return (
     <div className="min-h-screen" style={{ background: "oklch(0.12 0.02 260)" }}>
+      <LanguageSwitcher />
       <HeroSection />
       <EraNavigator activeEra={activeEra} />
-
-      {/* Stats Banner */}
       <StatsBanner />
 
       {/* Timeline */}
       <div className="relative">
-        {/* Central vertical line (desktop only) */}
         <div
           className="hidden md:block absolute left-1/2 top-0 bottom-0 w-px -translate-x-1/2"
           style={{
-            background:
-              "linear-gradient(to bottom, transparent, oklch(0.82 0.12 80 / 0.2) 10%, oklch(0.82 0.12 80 / 0.2) 90%, transparent)",
+            background: "linear-gradient(to bottom, transparent, oklch(0.82 0.12 80 / 0.2) 10%, oklch(0.82 0.12 80 / 0.2) 90%, transparent)",
           }}
         />
-
         {eras.map((era) => (
           <div key={era.id}>
             <EraHeader era={era} image={eraImages[era.id]} />
             <div className="container max-w-5xl mx-auto px-4 py-8">
               {eventsByEra[era.id]?.map((event, idx) => (
-                <TimelineCard key={`${event.year}-${event.title}`} event={event} index={idx} />
+                <TimelineCard key={`${event.year}-${event.i18nKey}`} event={event} index={idx} />
               ))}
             </div>
           </div>
         ))}
       </div>
 
-      {/* Growth Chart */}
       <GrowthChart />
-
-      {/* Countdown Clock */}
       <CountdownClock />
 
       {/* Closing */}
@@ -601,22 +581,19 @@ export default function Home() {
         </div>
         <div className="relative container max-w-3xl mx-auto px-4 text-center">
           <p className="font-mono text-xs tracking-[0.4em] uppercase mb-6" style={{ color: accentColors.gold }}>
-            The Journey Continues
+            {t("closing.tagline")}
           </p>
           <h2
             className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight text-glow-gold"
             style={{ fontFamily: "var(--font-display)", color: "oklch(0.95 0.03 80)" }}
           >
-            From One Language to Every Language
+            {t("closing.title")}
           </h2>
-          <p className="mt-6 text-lg leading-relaxed" style={{ color: "oklch(0.72 0.02 260)" }}>
-            What began with a single scroll in ancient Hebrew has grown into the
-            largest translation project in human history. With AI acceleration and
-            global collaboration, the goal of reaching every language is closer
-            than ever — projected by <strong style={{ color: accentColors.gold }}>2062</strong> for a Full Bible, and by{" "}
-            <strong style={{ color: accentColors.gold }}>the mid-2030s</strong> for
-            at least some Scripture in every tongue.
-          </p>
+          <p
+            className="mt-6 text-lg leading-relaxed"
+            style={{ color: "oklch(0.72 0.02 260)" }}
+            dangerouslySetInnerHTML={{ __html: t("closing.text") }}
+          />
         </div>
       </section>
 

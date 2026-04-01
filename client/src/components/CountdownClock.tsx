@@ -1,22 +1,13 @@
 /*
  * CountdownClock — Live progress tracker & countdown timer
  * Design: "Luminous Thread" — Dark Cathedral Aesthetic
- *
- * Shows:
- * 1. A live countdown to the projected completion date (Full Bible in every language, ~2062)
- * 2. Estimated daily/real-time progress based on current translation rates
- * 3. Progress bars for Full Bible, New Testament, and Some Scripture
- *
- * Math basis:
- * - 2022-2025 Wycliffe data shows ~17.3 new Full Bibles, ~60.3 new NTs, ~139.3 new languages
- *   gaining Scripture per year.
- * - We assume a 10% annual acceleration (AI + collaboration) for the accelerated model.
- * - The "daily progress" counter interpolates from the Aug 2025 baseline forward.
+ * Fully internationalized with react-i18next.
  */
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { KNOWN_2025, TARGET_FULL_BIBLE, TARGET_SOME_SCRIPTURE, CURRENT_RATES } from "@/lib/timelineData";
+import { useTranslation } from "react-i18next";
+import { KNOWN_2025, TARGET_FULL_BIBLE, CURRENT_RATES } from "@/lib/timelineData";
 
 const accentColors = {
   gold: "oklch(0.82 0.12 80)",
@@ -39,7 +30,6 @@ function getCountdown(target: Date): CountdownValues {
   const now = new Date();
   let diff = target.getTime() - now.getTime();
   if (diff < 0) diff = 0;
-
   const seconds = Math.floor(diff / 1000) % 60;
   const minutes = Math.floor(diff / (1000 * 60)) % 60;
   const hours = Math.floor(diff / (1000 * 60 * 60)) % 24;
@@ -48,33 +38,22 @@ function getCountdown(target: Date): CountdownValues {
   const remainingDays = totalDays - Math.floor(years * 365.25);
   const months = Math.floor(remainingDays / 30.44);
   const days = Math.floor(remainingDays - months * 30.44);
-
   return { years, months, days, hours, minutes, seconds };
 }
 
-/**
- * Estimate current progress since the known 2025 baseline.
- * Uses the base rate + 10% annual acceleration compound.
- */
 function getEstimatedProgress() {
   const now = new Date();
-  const elapsed = (now.getTime() - KNOWN_2025.date.getTime()) / (1000 * 60 * 60 * 24 * 365.25); // years since baseline
-
-  // Compound acceleration: rate * ((1.1^t - 1) / ln(1.1)) gives cumulative with 10% annual growth
+  const elapsed = (now.getTime() - KNOWN_2025.date.getTime()) / (1000 * 60 * 60 * 24 * 365.25);
   const ln1_1 = Math.log(1.1);
   const cumulativeFactor = elapsed > 0 ? (Math.pow(1.1, elapsed) - 1) / ln1_1 : 0;
-
   const estFullBibles = Math.floor(KNOWN_2025.fullBible + CURRENT_RATES.fullBiblesPerYear * cumulativeFactor);
   const estNT = Math.floor(KNOWN_2025.newTestament + CURRENT_RATES.newTestamentsPerYear * cumulativeFactor);
   const estTotal = Math.floor(KNOWN_2025.totalWithScripture + CURRENT_RATES.totalScripturePerYear * cumulativeFactor);
   const estWaiting = Math.max(0, Math.floor(KNOWN_2025.languagesWaiting - CURRENT_RATES.waitingListReductionPerYear * cumulativeFactor));
-
-  // Daily micro-progress (how much is being done RIGHT NOW)
-  const currentYearRate = Math.pow(1.1, elapsed); // acceleration multiplier
+  const currentYearRate = Math.pow(1.1, elapsed);
   const fullBiblesPerDay = (CURRENT_RATES.fullBiblesPerYear * currentYearRate) / 365.25;
   const ntPerDay = (CURRENT_RATES.newTestamentsPerYear * currentYearRate) / 365.25;
   const totalPerDay = (CURRENT_RATES.totalScripturePerYear * currentYearRate) / 365.25;
-
   return {
     estFullBibles: Math.min(estFullBibles, TARGET_FULL_BIBLE.totalLanguages),
     estNT: Math.min(estNT, KNOWN_2025.totalLanguagesNeeded),
@@ -124,6 +103,8 @@ function ProgressBar({
   pct,
   color,
   perDay,
+  langLabel,
+  perDayLabel,
 }: {
   label: string;
   current: number;
@@ -131,6 +112,8 @@ function ProgressBar({
   pct: number;
   color: string;
   perDay: number;
+  langLabel: string;
+  perDayLabel: string;
 }) {
   return (
     <div className="mb-6">
@@ -139,13 +122,10 @@ function ProgressBar({
           {label}
         </span>
         <span className="text-xs font-mono" style={{ color: "oklch(0.55 0.02 260)" }}>
-          {current.toLocaleString()} / {total.toLocaleString()} languages
+          {langLabel}
         </span>
       </div>
-      <div
-        className="w-full h-3 rounded-full overflow-hidden"
-        style={{ background: "oklch(0.18 0.02 260)" }}
-      >
+      <div className="w-full h-3 rounded-full overflow-hidden" style={{ background: "oklch(0.18 0.02 260)" }}>
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${pct}%` }}
@@ -159,7 +139,7 @@ function ProgressBar({
       </div>
       <div className="flex justify-between mt-1.5">
         <span className="text-[10px] font-mono" style={{ color: "oklch(0.45 0.02 260)" }}>
-          ~{perDay.toFixed(2)} new languages/day at current pace
+          {perDayLabel}
         </span>
         <span className="text-[10px] font-mono font-bold" style={{ color }}>
           {pct.toFixed(1)}%
@@ -174,6 +154,7 @@ export default function CountdownClock() {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const [countdown, setCountdown] = useState<CountdownValues>(getCountdown(TARGET_FULL_BIBLE.date));
   const [progress, setProgress] = useState(getEstimatedProgress);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -183,13 +164,11 @@ export default function CountdownClock() {
     return () => clearInterval(interval);
   }, []);
 
-  // Animated "languages translated since you opened this page"
   const [openTime] = useState(() => Date.now());
   const [microProgress, setMicroProgress] = useState(0);
   useEffect(() => {
     const interval = setInterval(() => {
       const elapsedSec = (Date.now() - openTime) / 1000;
-      // Total languages gaining Scripture per second (accelerated current rate)
       const perSec = progress.totalPerDay / (24 * 60 * 60);
       setMicroProgress(perSec * elapsedSec);
     }, 100);
@@ -198,12 +177,9 @@ export default function CountdownClock() {
 
   return (
     <section ref={ref} className="py-20 sm:py-32 relative overflow-hidden">
-      {/* Subtle radial glow */}
       <div
         className="absolute inset-0 pointer-events-none"
-        style={{
-          background: "radial-gradient(ellipse at center, oklch(0.82 0.12 80 / 0.03) 0%, transparent 70%)",
-        }}
+        style={{ background: "radial-gradient(ellipse at center, oklch(0.82 0.12 80 / 0.03) 0%, transparent 70%)" }}
       />
 
       <div className="relative container max-w-5xl mx-auto px-4">
@@ -214,20 +190,17 @@ export default function CountdownClock() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <p
-            className="font-mono text-xs tracking-[0.4em] uppercase mb-4"
-            style={{ color: accentColors.gold }}
-          >
-            Live Progress Tracker
+          <p className="font-mono text-xs tracking-[0.4em] uppercase mb-4" style={{ color: accentColors.gold }}>
+            {t("countdown.tagline")}
           </p>
           <h2
             className="text-3xl sm:text-4xl md:text-5xl font-bold"
             style={{ fontFamily: "var(--font-display)", color: "oklch(0.95 0.02 80)" }}
           >
-            Countdown to Every Language
+            {t("countdown.title")}
           </h2>
           <p className="mt-4 max-w-2xl mx-auto" style={{ color: "oklch(0.65 0.02 260)" }}>
-            Based on the 2022–2025 translation rhythm with projected 10% annual acceleration from AI and global collaboration.
+            {t("countdown.subtitle")}
           </p>
         </motion.div>
 
@@ -238,34 +211,31 @@ export default function CountdownClock() {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="mb-16"
         >
-          <p
-            className="text-center text-sm font-mono tracking-wider mb-6"
-            style={{ color: "oklch(0.6 0.02 260)" }}
-          >
-            Time remaining until Full Bible in every language (~2062)
+          <p className="text-center text-sm font-mono tracking-wider mb-6" style={{ color: "oklch(0.6 0.02 260)" }}>
+            {t("countdown.timeRemaining")}
           </p>
           <div className="flex justify-center gap-2 sm:gap-4 flex-wrap">
-            <CountdownDigit value={countdown.years} label="Years" />
+            <CountdownDigit value={countdown.years} label={t("countdown.years")} />
             <div className="flex items-center pb-6" style={{ color: accentColors.gold }}>
               <span className="text-2xl font-bold">:</span>
             </div>
-            <CountdownDigit value={countdown.months} label="Months" />
+            <CountdownDigit value={countdown.months} label={t("countdown.months")} />
             <div className="flex items-center pb-6" style={{ color: accentColors.gold }}>
               <span className="text-2xl font-bold">:</span>
             </div>
-            <CountdownDigit value={countdown.days} label="Days" />
+            <CountdownDigit value={countdown.days} label={t("countdown.days")} />
             <div className="flex items-center pb-6" style={{ color: accentColors.gold }}>
               <span className="text-2xl font-bold">:</span>
             </div>
-            <CountdownDigit value={countdown.hours} label="Hours" />
+            <CountdownDigit value={countdown.hours} label={t("countdown.hours")} />
             <div className="flex items-center pb-6" style={{ color: accentColors.gold }}>
               <span className="text-2xl font-bold">:</span>
             </div>
-            <CountdownDigit value={countdown.minutes} label="Min" />
+            <CountdownDigit value={countdown.minutes} label={t("countdown.min")} />
             <div className="flex items-center pb-6" style={{ color: accentColors.gold }}>
               <span className="text-2xl font-bold">:</span>
             </div>
-            <CountdownDigit value={countdown.seconds} label="Sec" />
+            <CountdownDigit value={countdown.seconds} label={t("countdown.sec")} />
           </div>
         </motion.div>
 
@@ -278,18 +248,17 @@ export default function CountdownClock() {
           style={{ background: "oklch(0.14 0.025 260)", borderColor: "oklch(0.25 0.03 260)" }}
         >
           <p className="text-xs font-mono tracking-widest uppercase mb-3" style={{ color: "oklch(0.5 0.02 260)" }}>
-            Estimated progress since you opened this page
+            {t("countdown.microTagline")}
           </p>
           <p className="text-4xl sm:text-5xl md:text-6xl font-bold tabular-nums" style={{ fontFamily: "var(--font-display)", color: accentColors.gold }}>
             {microProgress.toFixed(6)}
           </p>
           <p className="mt-2 text-sm" style={{ color: "oklch(0.6 0.02 260)" }}>
-            language-equivalents of Scripture progress
+            {t("countdown.microUnit")}
           </p>
           <div className="mt-4 h-px w-32 mx-auto" style={{ background: `linear-gradient(90deg, transparent, ${accentColors.gold}, transparent)` }} />
           <p className="mt-4 text-xs leading-relaxed max-w-lg mx-auto" style={{ color: "oklch(0.45 0.02 260)" }}>
-            This counter estimates real-time progress based on the average rate of ~{progress.totalPerDay.toFixed(1)} new languages gaining Scripture per day (with 10% annual acceleration).
-            The actual work happens in bursts — translation teams complete projects over months and years — but this gives a sense of the ongoing momentum.
+            {t("countdown.microExplain", { rate: progress.totalPerDay.toFixed(1) })}
           </p>
         </motion.div>
 
@@ -302,39 +271,45 @@ export default function CountdownClock() {
           style={{ background: "oklch(0.14 0.025 260)", borderColor: "oklch(0.25 0.03 260)" }}
         >
           <p className="text-xs font-mono tracking-widest uppercase mb-8" style={{ color: "oklch(0.5 0.02 260)" }}>
-            Estimated Current Translation Progress
+            {t("countdown.progressTagline")}
           </p>
 
           <ProgressBar
-            label="Full Bible"
+            label={t("chart.fullBible")}
             current={progress.estFullBibles}
             total={TARGET_FULL_BIBLE.totalLanguages}
             pct={progress.pctFullBible}
             color={accentColors.gold}
             perDay={progress.fullBiblesPerDay}
+            langLabel={t("countdown.languagesLabel", { current: progress.estFullBibles.toLocaleString(), total: TARGET_FULL_BIBLE.totalLanguages.toLocaleString() })}
+            perDayLabel={t("countdown.perDay", { rate: progress.fullBiblesPerDay.toFixed(2) })}
           />
           <ProgressBar
-            label="New Testament"
+            label={t("chart.newTestament")}
             current={progress.estNT}
             total={KNOWN_2025.totalLanguagesNeeded}
             pct={progress.pctNT}
             color={accentColors.sapphire}
             perDay={progress.ntPerDay}
+            langLabel={t("countdown.languagesLabel", { current: progress.estNT.toLocaleString(), total: KNOWN_2025.totalLanguagesNeeded.toLocaleString() })}
+            perDayLabel={t("countdown.perDay", { rate: progress.ntPerDay.toFixed(2) })}
           />
           <ProgressBar
-            label="Some Scripture"
+            label={t("someScripture")}
             current={progress.estTotal}
             total={KNOWN_2025.totalLanguagesNeeded}
             pct={progress.pctTotal}
             color={accentColors.emerald}
             perDay={progress.totalPerDay}
+            langLabel={t("countdown.languagesLabel", { current: progress.estTotal.toLocaleString(), total: KNOWN_2025.totalLanguagesNeeded.toLocaleString() })}
+            perDayLabel={t("countdown.perDay", { rate: progress.totalPerDay.toFixed(2) })}
           />
 
           {/* Waiting list */}
           <div className="mt-6 pt-6 border-t" style={{ borderColor: "oklch(0.22 0.02 260)" }}>
             <div className="flex justify-between items-center">
               <span className="text-sm font-mono tracking-wider" style={{ color: "oklch(0.75 0.02 80)" }}>
-                Languages still waiting
+                {t("countdown.waitingLabel")}
               </span>
               <span
                 className="text-2xl font-bold tabular-nums"
@@ -344,7 +319,7 @@ export default function CountdownClock() {
               </span>
             </div>
             <p className="mt-1 text-[10px] font-mono" style={{ color: "oklch(0.45 0.02 260)" }}>
-              Decreasing by ~{(CURRENT_RATES.waitingListReductionPerYear / 365.25).toFixed(1)} languages/day
+              {t("countdown.waitingRate", { rate: (CURRENT_RATES.waitingListReductionPerYear / 365.25).toFixed(1) })}
             </p>
           </div>
         </motion.div>
@@ -357,13 +332,7 @@ export default function CountdownClock() {
           className="mt-8 text-center text-xs leading-relaxed max-w-2xl mx-auto"
           style={{ color: "oklch(0.4 0.02 260)" }}
         >
-          Methodology: Baseline data from{" "}
-          <a href="https://wycliffe.net/global-scripture-access/" target="_blank" rel="noopener noreferrer" className="underline" style={{ color: "oklch(0.55 0.12 80)" }}>
-            Wycliffe Global Alliance reports (2022–2025)
-          </a>
-          . Annual rates: ~17.3 Full Bibles, ~60.3 New Testaments, ~139.3 total languages gaining Scripture.
-          Acceleration model assumes 10% compound annual growth driven by AI tools (AQuA, Greek Room) and expanded global collaboration.
-          These are illustrative estimates, not precise predictions.
+          {t("countdown.methodology")}
         </motion.p>
       </div>
     </section>
