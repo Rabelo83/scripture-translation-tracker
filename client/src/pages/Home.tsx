@@ -530,6 +530,8 @@ function Footer() {
           <p className="mt-2 font-mono text-[10px] tracking-wider" style={{ color: "oklch(0.32 0.02 260)" }}>
             <a href="https://am2ar.com" target="_blank" rel="noopener noreferrer" className="hover:underline">am2ar.com</a>
             {" · "}
+            <a href="mailto:alfredo.rabelo@am2ar.com" className="hover:underline">alfredo.rabelo@am2ar.com</a>
+            {" · "}
             <a href="tel:+13523284402" className="hover:underline">+1 (352) 328-4402</a>
           </p>
         </div>
