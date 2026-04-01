@@ -325,15 +325,26 @@ export default function CountdownClock() {
         </motion.div>
 
         {/* Methodology note */}
-        <motion.p
+        <motion.div
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
           transition={{ duration: 0.6, delay: 0.7 }}
-          className="mt-8 text-center text-xs leading-relaxed max-w-2xl mx-auto"
-          style={{ color: "oklch(0.4 0.02 260)" }}
+          className="mt-8 rounded-lg border border-dashed p-5 max-w-2xl mx-auto"
+          style={{ borderColor: "oklch(0.4 0.08 65)", background: "oklch(0.14 0.02 260 / 0.6)" }}
         >
-          {t("countdown.methodology")}
-        </motion.p>
+          <p
+            className="text-xs font-mono tracking-widest uppercase mb-2 text-center"
+            style={{ color: accentColors.amber }}
+          >
+            {t("countdown.disclaimerTitle")}
+          </p>
+          <p
+            className="text-xs leading-relaxed text-center"
+            style={{ color: "oklch(0.55 0.02 260)" }}
+          >
+            {t("countdown.methodology")}
+          </p>
+        </motion.div>
       </div>
     </section>
   );

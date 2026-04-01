@@ -41,7 +41,8 @@
     "waitingLabel": "Languages still waiting",
     "waitingRate": "Decreasing by ~{{rate}} languages/day",
     "methodology": "Methodology: Baseline data from Wycliffe Global Alliance reports (2022–2025). Annual rates: ~17.3 Full Bibles, ~60.3 New Testaments, ~139.3 total languages gaining Scripture. Acceleration model assumes 10% compound annual growth driven by AI tools (AQuA, Greek Room) and expanded global collaboration. These are illustrative estimates, not precise predictions.",
-    "methodologyLinkText": "Wycliffe Global Alliance reports (2022–2025)"
+    "methodologyLinkText": "Wycliffe Global Alliance reports (2022–2025)",
+    "disclaimerTitle": "Illustrative Estimates — Not Predictions"
   },
   "closing": {
     "tagline": "The Journey Continues",

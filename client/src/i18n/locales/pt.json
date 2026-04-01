@@ -41,7 +41,8 @@
     "waitingLabel": "Idiomas ainda aguardando",
     "waitingRate": "Diminuindo ~{{rate}} idiomas/dia",
     "methodology": "Metodologia: Dados base dos relatórios da Wycliffe Global Alliance (2022–2025). Taxas anuais: ~17,3 Bíblias completas, ~60,3 Novos Testamentos, ~139,3 idiomas totais obtendo Escrituras. O modelo de aceleração assume crescimento composto anual de 10% impulsionado por ferramentas de IA (AQuA, Greek Room) e colaboração global expandida. Estas são estimativas ilustrativas, não previsões precisas.",
-    "methodologyLinkText": "Relatórios da Wycliffe Global Alliance (2022–2025)"
+    "methodologyLinkText": "Relatórios da Wycliffe Global Alliance (2022–2025)",
+    "disclaimerTitle": "Estimativas Ilustrativas — Não Previsões"
   },
   "closing": {
     "tagline": "A Jornada Continua",

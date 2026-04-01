@@ -20,6 +20,12 @@ const GLOBE_IMAGE = "https://d2xsxph8kpxj0f.cloudfront.net/310519663488259868/Vj
 const FUTURE_IMAGE = "https://d2xsxph8kpxj0f.cloudfront.net/310519663488259868/VjUGuydrAHXpGVYaWdwTng/future-light-EaWqtKaPJ7JARfWDK3PSYr.webp";
 const PRESS_IMAGE = "https://d2xsxph8kpxj0f.cloudfront.net/310519663488259868/VjUGuydrAHXpGVYaWdwTng/printing-press-m4BmURWr6RRer3NWiBj4ng.webp";
 
+function FallbackImg({ src, alt, className, style }: { src: string; alt: string; className?: string; style?: React.CSSProperties }) {
+  const [failed, setFailed] = useState(false);
+  if (failed) return <div className={className} style={{ ...style, background: "linear-gradient(135deg, oklch(0.15 0.03 260), oklch(0.1 0.02 260))" }} />;
+  return <img src={src} alt={alt} className={className} style={style} onError={() => setFailed(true)} />;
+}
+
 const accentColors: Record<string, string> = {
   gold: "oklch(0.82 0.12 80)",
   ruby: "oklch(0.55 0.2 15)",
@@ -90,7 +96,7 @@ function HeroSection() {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       <div className="absolute inset-0">
-        <img src={HERO_IMAGE} alt="" className="w-full h-full object-cover" />
+        <FallbackImg src={HERO_IMAGE} alt="" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-b from-[oklch(0.12_0.02_260/0.4)] via-[oklch(0.12_0.02_260/0.6)] to-[oklch(0.12_0.02_260)]" />
       </div>
       <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
@@ -181,7 +187,7 @@ function EraHeader({ era, image }: { era: typeof eras[0]; image?: string }) {
     <div id={`era-${era.id}`} ref={ref} className="relative py-24 sm:py-32 scroll-mt-20">
       {image && (
         <div className="absolute inset-0 overflow-hidden">
-          <img src={image} alt="" className="w-full h-full object-cover opacity-20" />
+          <FallbackImg src={image} alt="" className="w-full h-full object-cover opacity-20" />
           <div className="absolute inset-0 bg-gradient-to-b from-[oklch(0.12_0.02_260)] via-[oklch(0.12_0.02_260/0.7)] to-[oklch(0.12_0.02_260)]" />
         </div>
       )}
@@ -576,7 +582,7 @@ export default function Home() {
       {/* Closing */}
       <section className="py-20 sm:py-32 relative overflow-hidden">
         <div className="absolute inset-0">
-          <img src={FUTURE_IMAGE} alt="" className="w-full h-full object-cover opacity-15" />
+          <FallbackImg src={FUTURE_IMAGE} alt="" className="w-full h-full object-cover opacity-15" />
           <div className="absolute inset-0 bg-gradient-to-b from-[oklch(0.12_0.02_260)] via-[oklch(0.12_0.02_260/0.8)] to-[oklch(0.12_0.02_260)]" />
         </div>
         <div className="relative container max-w-3xl mx-auto px-4 text-center">
