@@ -47,7 +47,9 @@
   "closing": {
     "tagline": "The Journey Continues",
     "title": "From One Language to Every Language",
-    "text": "What began with a single scroll in ancient Hebrew has grown into the largest translation project in human history. With AI acceleration and global collaboration, the goal of reaching every language is closer than ever — projected by <strong>2062</strong> for a Full Bible, and by <strong>the mid-2030s</strong> for at least some Scripture in every tongue."
+    "text": "What began with a single scroll in ancient Hebrew has grown into the largest translation project in human history. With AI acceleration and global collaboration, the goal of reaching every language is closer than ever — projected by <strong>2062</strong> for a Full Bible, and by <strong>the mid-2030s</strong> for at least some Scripture in every tongue.",
+    "verse": "Through God we shall do valiantly.",
+    "verseRef": "Psalm 108:13"
   },
   "footer": {
     "sources": "Data sourced from",

@@ -621,6 +621,21 @@ export default function Home() {
             style={{ color: "oklch(0.72 0.02 260)" }}
             dangerouslySetInnerHTML={{ __html: t("closing.text") }}
           />
+          <div className="mt-12 h-px w-24 mx-auto" style={{ background: `linear-gradient(90deg, transparent, ${accentColors.gold}, transparent)` }} />
+          <blockquote className="mt-8">
+            <p
+              className="text-xl sm:text-2xl italic leading-relaxed"
+              style={{ fontFamily: "var(--font-display)", color: "oklch(0.82 0.12 80)" }}
+            >
+              "{t("closing.verse")}"
+            </p>
+            <cite
+              className="block mt-3 text-sm font-mono tracking-wider not-italic"
+              style={{ color: "oklch(0.55 0.02 260)" }}
+            >
+              — {t("closing.verseRef")}
+            </cite>
+          </blockquote>
         </div>
       </section>
 
