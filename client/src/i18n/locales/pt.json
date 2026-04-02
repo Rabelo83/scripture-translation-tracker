@@ -57,6 +57,15 @@
     "copyright": "Cronologia da Tradução Bíblica · 2026",
     "builtBy": "Desenvolvido por"
   },
+  "verse": {
+    "tagline": "Um Versículo, Muitas Línguas",
+    "title": "Ouça em Cada Idioma",
+    "subtitle": "Salmo 27:13 — uma das declarações de fé mais poderosas das Escrituras. Selecione um idioma para ver e ouvir como soa ao redor do mundo.",
+    "transliteration": "Transliteração",
+    "pronunciation": "Como pronunciar (guia em inglês)",
+    "pronunciationNote": "Pronúncia aproximada para falantes de inglês. As sílabas tônicas estão em MAIÚSCULAS.",
+    "languageCount": "Disponível em {{count}} idiomas — mais em breve"
+  },
   "projection": "Projeção",
   "someScripture": "Algumas Escrituras",
   "eras": {

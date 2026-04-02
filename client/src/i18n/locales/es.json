@@ -57,6 +57,15 @@
     "copyright": "Cronología de la Traducción Bíblica · 2026",
     "builtBy": "Desarrollado por"
   },
+  "verse": {
+    "tagline": "Un Versículo, Muchas Lenguas",
+    "title": "Escúchalo en Cada Idioma",
+    "subtitle": "Salmo 27:13 — una de las declaraciones de fe más poderosas de las Escrituras. Selecciona un idioma para ver y escuchar cómo suena en todo el mundo.",
+    "transliteration": "Transliteración",
+    "pronunciation": "Cómo pronunciarlo (guía en inglés)",
+    "pronunciationNote": "Pronunciación aproximada para hablantes de inglés. Las sílabas acentuadas están en MAYÚSCULAS.",
+    "languageCount": "Disponible en {{count}} idiomas — próximamente más"
+  },
   "projection": "Proyección",
   "someScripture": "Algunas Escrituras",
   "eras": {

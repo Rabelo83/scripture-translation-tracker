@@ -57,6 +57,15 @@
     "copyright": "Bible Translation Timeline · 2026",
     "builtBy": "Built by"
   },
+  "verse": {
+    "tagline": "One Verse, Many Tongues",
+    "title": "Hear It in Every Language",
+    "subtitle": "Psalm 27:13 — one of the most powerful declarations of faith in Scripture. Select a language to see and hear how it sounds across the world.",
+    "transliteration": "Transliteration",
+    "pronunciation": "How to pronounce it (English guide)",
+    "pronunciationNote": "Approximate pronunciation for English speakers. Stressed syllables are in CAPITALS.",
+    "languageCount": "Available in {{count}} languages — more coming soon"
+  },
   "projection": "Projection",
   "someScripture": "Some Scripture",
   "eras": {

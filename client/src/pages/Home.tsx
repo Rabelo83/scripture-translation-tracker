@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import { eras, timelineEvents, translationGrowthData, type TimelineEvent, type Era } from "@/lib/timelineData";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import CountdownClock from "@/components/CountdownClock";
+import VerseExplorer from "@/components/VerseExplorer";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { ExternalLink } from "lucide-react";
 
@@ -599,6 +600,7 @@ export default function Home() {
 
       <GrowthChart />
       <CountdownClock />
+      <VerseExplorer />
 
       {/* Closing */}
       <section className="py-20 sm:py-32 relative overflow-hidden">
