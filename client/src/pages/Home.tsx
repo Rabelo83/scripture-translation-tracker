@@ -252,7 +252,7 @@ function CardContent({ event }: { event: TimelineEvent }) {
         </span>
       )}
       <p className="font-mono text-xs tracking-wider mb-1" style={{ color: accentColors[event.accent] }}>
-        {event.yearLabel}
+        {t(`events.${event.i18nKey}.yearLabel`, { defaultValue: event.yearLabel })}
       </p>
       <h3
         className="text-xl font-bold mb-3"
