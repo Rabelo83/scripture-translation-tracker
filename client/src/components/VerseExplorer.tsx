@@ -4,11 +4,24 @@
  * Fully internationalized with react-i18next.
  */
 
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { motion, useInView } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { verseLanguages, VERSE_REF, type VerseLanguage } from "@/lib/verseData";
 import { ChevronDown, BookOpen, Languages, Volume2 } from "lucide-react";
+
+/**
+ * Returns the best available pronunciation for the given verse language,
+ * based on the active site language (en, es, pt).
+ */
+function getPronunciation(verse: VerseLanguage, siteLang: string): string | undefined {
+  const lang = siteLang.substring(0, 2); // "en-US" → "en"
+  if (lang === "es" && verse.pronunciation_es) return verse.pronunciation_es;
+  if (lang === "pt" && verse.pronunciation_pt) return verse.pronunciation_pt;
+  if (lang === "en" && verse.pronunciation_en) return verse.pronunciation_en;
+  // Fallback chain: try the site language first, then any available
+  return verse.pronunciation_es ?? verse.pronunciation_pt ?? verse.pronunciation_en;
+}
 
 const accentColors = {
   gold: "oklch(0.82 0.12 80)",
@@ -35,11 +48,17 @@ function verseFontClass(script: VerseLanguage["script"]): string {
 export default function VerseExplorer() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [selectedCode, setSelectedCode] = useState("en");
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const selected = verseLanguages.find((v) => v.code === selectedCode) ?? verseLanguages[0];
+  const siteLang = i18n.language;
+  const pronunciation = useMemo(() => {
+    // Don't show pronunciation when the verse is in the user's own language
+    if (selected.code === siteLang.substring(0, 2)) return undefined;
+    return getPronunciation(selected, siteLang);
+  }, [selected, siteLang]);
 
   return (
     <section ref={ref} className="py-20 sm:py-32">
@@ -222,14 +241,14 @@ export default function VerseExplorer() {
           )}
 
           {/* Pronunciation guide */}
-          {selected.pronunciation_en && (
+          {pronunciation && (
             <>
               <div
                 className="my-6 h-px"
                 style={{ background: "linear-gradient(90deg, transparent, oklch(0.25 0.03 260), transparent)" }}
               />
               <motion.div
-                key={selected.code + "-pron"}
+                key={selected.code + "-pron-" + siteLang}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.25 }}
@@ -251,7 +270,7 @@ export default function VerseExplorer() {
                     fontFamily: "var(--font-mono)",
                   }}
                 >
-                  {selected.pronunciation_en}
+                  {pronunciation}
                 </p>
                 <p
                   className="mt-2 text-[10px] font-mono"

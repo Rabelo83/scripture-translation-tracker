@@ -59,11 +59,12 @@
   },
   "verse": {
     "tagline": "Um Versículo, Muitas Línguas",
-    "title": "Ouça em Cada Idioma",
-    "subtitle": "Salmo 27:13 — uma das declarações de fé mais poderosas das Escrituras. Selecione um idioma para ver e ouvir como soa ao redor do mundo.",
+    "title": "Leia em Cada Idioma",
+    "subtitle": "Salmo 27:13 — uma das declarações de fé mais poderosas das Escrituras. Selecione um idioma para ver como se lê ao redor do mundo.",
     "transliteration": "Transliteração",
-    "pronunciation": "Como pronunciar (guia em inglês)",
-    "pronunciationNote": "Pronúncia aproximada para falantes de inglês. As sílabas tônicas estão em MAIÚSCULAS.",
+    "pronunciation": "Como pronunciar",
+    "pronunciationNote": "Pronúncia aproximada para falantes de português. As sílabas tônicas estão em MAIÚSCULAS.",
+    "noPronunciation": "Guia de pronúncia ainda não disponível para o seu idioma.",
     "languageCount": "Disponível em {{count}} idiomas — mais em breve"
   },
   "projection": "Projeção",
